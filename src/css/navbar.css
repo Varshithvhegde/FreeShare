@@ -8,7 +8,23 @@
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
 
 }
-
+.navText {
+    flex: 1; /* Expand to fill remaining space */
+  }
+  
+  .aboutContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: auto;
+  }
+  
+  .aboutText {
+    margin-right: 10px;
+    color: #4F5FB3;
+    font-size: 18px;
+    /* Add any additional styles as needed */
+  }
 @media (max-width: 600px) {
     .Navtext {
         font-size: 20px !important;
