@@ -1,0 +1,188 @@
+/* body {
+  
+  background-image: url('images/background.svg');
+  background-color: rgba(0, 0, 0, 0.5);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  /* z-index:-1; */
+body {
+  position: relative;
+  overflow-y: hidden;
+}
+html {
+  touch-action: manipulation;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('images/background.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  opacity: 0.5;
+  /* Adjust the opacity value as desired */
+  z-index: -1;
+}
+
+.Footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  /* Adjust the height of the wave */
+  overflow: hidden;
+  /* Hide overflow to prevent scrollbars */
+}
+
+.Wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  /* Increase the width to cover the entire footer width */
+  height: 100%;
+  background-image: url('images/wave1.svg'), url('images/wave2.svg'), url('images/wave3.svg');
+  /* Add the URLs of your wave SVG images */
+  background-repeat: repeat-x;
+  background-position: left bottom, right bottom;
+  /* Adjust the positions as needed */
+  animation: waveAnimation 15s linear infinite;
+}
+
+@keyframes waveAnimation {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+    /* Move the wave images to the left */
+  }
+}
+
+
+.Maindiv {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.Appcontainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  /* margin-top: 50vh; */
+}
+
+.LeftSide {
+  float: left;
+  width: 50%;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -5%;
+}
+
+.RightSide {
+  float: right;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  align-items: center;
+  margin-left: -10%;
+}
+
+.FileUploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  width: 300px;
+  height: 230px;
+  background-color: white !important;
+  opacity: 0.8;
+  /* z-index: ; */
+  border-radius: 4px;
+  box-shadow: 0 2px 20px 7px rgba(0, 0, 0, .05);
+  margin-top: -30%;
+
+}
+
+.OTPInputContainer {
+  display: flex;
+  align-items: center;
+}
+
+.DownloadSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.textclass2 {
+
+  font-size: 38px;
+  margin-left: -5%;
+}
+
+.MobileViewOnly {
+  display: none;
+}
+
+@media (max-width: 600px) {
+
+  .Appcontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .LeftSide {
+    display: none;
+  }
+
+  .RightSide {
+    width: 100%;
+    margin-left: 0%;
+    margin-top: -150px;
+  }
+
+  .MobileViewOnly {
+    display: block;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3%;
+    margin-bottom: 0%;
+    text-align: center;
+  }
+}
+
+@media (max-width:600px) and (max-height:545px) {
+  .MobileViewOnly {
+    display: none;
+  }
+
+  .RightSide {
+    margin-top: 0px;
+  }
+}

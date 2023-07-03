@@ -1,0 +1,20 @@
+.appBar {
+    background-color: white !important;
+    opacity: 90%;
+}
+
+.Navtext {
+    color: black;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
+
+}
+
+@media (max-width: 600px) {
+    .Navtext {
+        font-size: 20px !important;
+    }
+
+    .appBar {
+        height: 8vh;
+    }
+}
