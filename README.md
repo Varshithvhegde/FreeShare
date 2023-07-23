@@ -57,6 +57,7 @@ FreeShare operates on a reliable and efficient architecture:
 ---
 
 ## User Interface
+![FreeShare](https://github.com/Varshithvhegde/FreeShare/assets/80502833/84bd7301-9b64-4dba-ae25-214f4152a47c)
 
 FreeShare's user interface has been thoughtfully designed to provide a pleasant and hassle-free experience to users. The clean and intuitive design allows users to quickly understand how to navigate the platform, enabling them to share and download files effortlessly. With carefully chosen color schemes and smooth transitions, the user interface makes the file-sharing process a visually appealing experience.
 
