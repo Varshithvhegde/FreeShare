@@ -1,18 +1,15 @@
-import logo from "./logo.svg";
 import "./App.css";
 import React from "react";
 import { useState, useEffect } from "react";
-import OTPInput, { ResendOTP } from "react-otp-input";
+import OTPInput from "react-otp-input";
 import Navbar from "./components/Navbar";
-import { Typography } from "@material-ui/core";
 import styled from "styled-components";
 import { keyframes } from "styled-components";
 import { IconButton } from "@material-ui/core";
-import Grid from "@material-ui/core";
-// import {AiOutlineCloudUpload} form
-import { AiOutlineCloudUpload, AiOutlineShareAlt ,AiOutlineCopy} from "react-icons/ai";
-import {RxClipboardCopy} from "react-icons/rx";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import {
+  AiOutlineShareAlt,
+} from "react-icons/ai";
+import { RxClipboardCopy } from "react-icons/rx";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import {
   AttachFile,
@@ -37,18 +34,19 @@ import {
   query,
   orderByChild,
   equalTo,
-  remove 
+  remove,
 } from "firebase/database";
 import {
   getDownloadURL,
   ref as dbstorageref,
   uploadBytesResumable,
   getStorage,
-  deleteObject 
+  deleteObject,
 } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
 import toast, { Toaster } from "react-hot-toast";
 import { ThreeDots } from "react-loader-spinner";
+import JSZip from "jszip";
 function App() {
   const [OTP, setOTP] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -60,7 +58,7 @@ function App() {
   const [UniqueID, setUniqueID] = useState(12345);
   const [showshareUniqueID, setshowshareUniqueID] = useState(10000);
   const [downloadUrl, setDownloadUrl] = useState(null);
-  const [showdownloadloader,setshowdownloadloader] = useState(false);
+  const [showdownloadloader, setshowdownloadloader] = useState(false);
   const handleOTPChange = (otp) => {
     setOTP(otp);
   };
@@ -122,49 +120,126 @@ function App() {
   const database = getDatabase(app);
 
   const storage = getStorage(app);
-
   const handleFileDrop = (files) => {
     setPercentage(0);
     setFile(files);
     console.log(files);
-    const storageRef = dbstorageref(storage, "images/" + files[0].path);
-    const uploadTask = uploadBytesResumable(storageRef, files[0]);
+    if (files.length > 1) {
+      const zip = new JSZip();
+      const promises = [];
+      files.forEach((file, index) => {
+        const fileReader = new FileReader();
+        const promise = new Promise((resolve, reject) => {
+          fileReader.onload = () => {
+            const data = fileReader.result;
+            console.log(files[index].name);
+            zip.file(files[index].name, data);
+            resolve();
+          };
+          fileReader.onerror = (error) => {
+            reject(error);
+          };
+        });
+        fileReader.readAsArrayBuffer(file);
+        promises.push(promise);
+      });
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setPercentage(progress);
-      },
-      (error) => {
-        console.error(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((url) => {
-            setDownloadUrl(url);
-            console.log("File uploaded successfully");
-            console.log("Download URL:", url);
-            generateUniqueNumber()
-              .then((uniqueNumber) => {
-                console.log("Unique Number:", uniqueNumber);
-                setUniqueID(uniqueNumber);
-                return storeDataInDatabase(url, uniqueNumber);
-              })
-              .then(() => {
-                console.log("URL and Unique Number are stored in the database");
-              })
-              .catch((error) => {
-                console.error("Error storing URL and Unique Number:", error);
-              });
-          })
-          .catch((error) => {
-            console.error(error);
+      Promise.all(promises)
+        .then(() => {
+          zip.generateAsync({ type: "blob" }).then((content) => {
+            const storageRef = dbstorageref(
+              storage,
+              "images/" + files[0].path + ".zip"
+            );
+            const uploadTask = uploadBytesResumable(storageRef, content);
+
+            uploadTask.on(
+              "state_changed",
+              (snapshot) => {
+                const progress = Math.round(
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                setPercentage(progress);
+              },
+              (error) => {
+                console.error(error);
+              },
+              () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                  .then((url) => {
+                    setDownloadUrl(url);
+                    console.log("File uploaded successfully");
+                    console.log("Download URL:", url);
+                    generateUniqueNumber()
+                      .then((uniqueNumber) => {
+                        console.log("Unique Number:", uniqueNumber);
+                        setUniqueID(uniqueNumber);
+                        return storeDataInDatabase(url, uniqueNumber);
+                      })
+                      .then(() => {
+                        console.log(
+                          "URL and Unique Number are stored in the database"
+                        );
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Error storing URL and Unique Number:",
+                          error
+                        );
+                      });
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              }
+            );
           });
-      }
-    );
+        })
+        .catch((error) => {
+          console.error("Error creating the zip:", error);
+        });
+    } else {
+      const storageRef = dbstorageref(storage, "images/" + files[0].path);
+      const uploadTask = uploadBytesResumable(storageRef, files[0]);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setPercentage(progress);
+        },
+        (error) => {
+          console.error(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((url) => {
+              setDownloadUrl(url);
+              console.log("File uploaded successfully");
+              console.log("Download URL:", url);
+              generateUniqueNumber()
+                .then((uniqueNumber) => {
+                  console.log("Unique Number:", uniqueNumber);
+                  setUniqueID(uniqueNumber);
+                  return storeDataInDatabase(url, uniqueNumber);
+                })
+                .then(() => {
+                  console.log(
+                    "URL and Unique Number are stored in the database"
+                  );
+                })
+                .catch((error) => {
+                  console.error("Error storing URL and Unique Number:", error);
+                });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      );
+    }
   };
 
   const generateUniqueNumber = () => {
@@ -233,37 +308,36 @@ function App() {
   const handleClick = () => {
     setshowdownloadloader(true);
     let otpp = parseInt(OTP);
-    if(otpp>=10000){
-    checkIfOTPExists(otpp)
-      .then((exists) => {
-        if (exists) {
-          getDownloadURLFromOTP(otpp)
-            .then((downloadUrl) => {
-              console.log("why", downloadUrl);
-              setshowdownloadloader(false);
-              downloadAndDeleteFile(downloadUrl,otpp);
-            })
-            .catch((error) => {
-              setshowdownloadloader(false);
-              console.error("Error getting download URL:", error);
+    if (otpp >= 10000) {
+      checkIfOTPExists(otpp)
+        .then((exists) => {
+          if (exists) {
+            getDownloadURLFromOTP(otpp)
+              .then((downloadUrl) => {
+                console.log("why", downloadUrl);
+                setshowdownloadloader(false);
+                downloadAndDeleteFile(downloadUrl, otpp);
+              })
+              .catch((error) => {
+                setshowdownloadloader(false);
+                console.error("Error getting download URL:", error);
+              });
+          } else {
+            setshowdownloadloader(false);
+            toast.error("Invalid Unique ID", {
+              style: {
+                width: "2000px",
+                height: "35px",
+              },
             });
-        } else {
-          setshowdownloadloader(false);
-          toast.error("Invalid Unique ID",{style:{
-            
-              width:"2000px",
-              height:"35px"
-            }
-          });
-          setOTP("");
-          console.log("Entered OTP does not exist in the database.");
-        }
-      })
-      .catch((error) => { 
-        console.error("Error checking if OTP exists:", error);
-      });
-    }
-    else{
+            setOTP("");
+            console.log("Entered OTP does not exist in the database.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking if OTP exists:", error);
+        });
+    } else {
       setshowdownloadloader(false);
       toast.error("Enter Proper unique ID");
     }
@@ -271,7 +345,6 @@ function App() {
 
   const checkIfOTPExists = (otp) => {
     return new Promise((resolve, reject) => {
-      
       const database = getDatabase();
       const databaseRef = ref(database, "fileData");
 
@@ -295,7 +368,6 @@ function App() {
 
   const getDownloadURLFromOTP = (otp) => {
     return new Promise((resolve, reject) => {
-     
       const database = getDatabase();
       const databaseRef = ref(database, "fileData");
 
@@ -324,7 +396,7 @@ function App() {
 
   const downloadAndDeleteFile = (downloadUrl, otp) => {
     const downloadWindow = window.open(downloadUrl, "_blank");
-    
+
     // After the download has started, we can delete the file from the database and storage
     setTimeout(() => {
       deleteFileFromDatabase(otp)
@@ -334,7 +406,7 @@ function App() {
         .catch((error) => {
           console.error("Error deleting file from the database:", error);
         });
-  
+
       deleteFileFromStorage(downloadUrl)
         .then(() => {
           console.log("File deleted from Firebase storage.");
@@ -344,13 +416,13 @@ function App() {
         });
     }, 10000);
   };
-  
+
   const deleteFileFromDatabase = (otp) => {
     const database = getDatabase();
     const databaseRef = ref(database, "fileData");
-  
+
     const fileRef = query(databaseRef, orderByChild("unique"), equalTo(otp));
-  
+
     return get(fileRef).then((snapshot) => {
       if (snapshot.exists()) {
         const key = Object.keys(snapshot.val())[0];
@@ -361,11 +433,11 @@ function App() {
       }
     });
   };
-  
+
   const deleteFileFromStorage = (downloadUrl) => {
     const storage = getStorage();
     const fileRef = dbstorageref(storage, downloadUrl);
-  
+
     return deleteObject(fileRef);
   };
   const shareNewFile = () => {
@@ -378,7 +450,8 @@ function App() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(showshareUniqueID)
+    navigator.clipboard
+      .writeText(showshareUniqueID)
       .then(() => {
         console.log("Text copied to clipboard: ", showshareUniqueID);
         toast.success("Copied to Clipboard");
@@ -395,7 +468,12 @@ function App() {
       <Navbar />
       <div className="MobileViewOnly">
         <p>Now, share files online easily</p>
-        <p>with just a <span style={{fontSize:"20px",fontWeight: 'bold' }}>5-digit code</span></p>
+        <p>
+          with just a{" "}
+          <span style={{ fontSize: "20px", fontWeight: "bold" }}>
+            5-digit code
+          </span>
+        </p>
       </div>
       <div className="Appcontainer">
         <div className="LeftSide">
@@ -471,18 +549,24 @@ function App() {
                     renderInput={(props) => <input {...props} />}
                     secure
                   />
-                  <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{marginTop:"10px"}}
-                    onClick={copyToClipboard}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
                   >
-                    Copy to clipboard
-                    <RxClipboardCopy
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      style={{ marginTop: "10px" }}
+                      onClick={copyToClipboard}
+                    >
+                      Copy to clipboard
+                      <RxClipboardCopy
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    </Button>
                   </div>
                   <a
                     href=""
@@ -502,7 +586,7 @@ function App() {
               submitButtonText={"submit"}
               maxFileSize={100000000}
               open={open}
-              filesLimit={1}
+              // filesLimit={1}
               // onDrop={(event)=>{setOpen(false);}}
               onClose={() => setOpen(false)}
               onSave={(files) => {
@@ -569,20 +653,22 @@ function App() {
                   borderRadius: "5px",
                   marginLeft: "5px",
                 }}
-              >{showdownloadloader&&(
-                <ThreeDots 
-height="50" 
-width="30" 
-radius="9"
-color="#FFFFFF" 
-ariaLabel="three-dots-loading"
-wrapperStyle={{}}
-wrapperClassName=""
-visible={true}
- />
-              )}
-              {!showdownloadloader&& (<GetAppIcon fontSize="medium" style={{ color: "#FFFFFF" }} />)}
-               
+              >
+                {showdownloadloader && (
+                  <ThreeDots
+                    height="50"
+                    width="30"
+                    radius="9"
+                    color="#FFFFFF"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                  />
+                )}
+                {!showdownloadloader && (
+                  <GetAppIcon fontSize="medium" style={{ color: "#FFFFFF" }} />
+                )}
               </IconButton>
             </div>
           </div>
