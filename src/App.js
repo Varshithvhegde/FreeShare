@@ -47,6 +47,7 @@ import { getAnalytics } from "firebase/analytics";
 import toast, { Toaster } from "react-hot-toast";
 import { ThreeDots } from "react-loader-spinner";
 import JSZip from "jszip";
+import { getFunctions, httpsCallable } from "firebase/functions";
 function App() {
   const [OTP, setOTP] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -146,10 +147,11 @@ function App() {
 
       Promise.all(promises)
         .then(() => {
+          var filename= files[0].path+".zip";
           zip.generateAsync({ type: "blob" }).then((content) => {
             const storageRef = dbstorageref(
               storage,
-              "images/" + files[0].path + ".zip"
+              "images/" + filename
             );
             const uploadTask = uploadBytesResumable(storageRef, content);
 
@@ -174,7 +176,7 @@ function App() {
                       .then((uniqueNumber) => {
                         console.log("Unique Number:", uniqueNumber);
                         setUniqueID(uniqueNumber);
-                        return storeDataInDatabase(url, uniqueNumber);
+                        return storeDataInDatabase(url, uniqueNumber,filename);
                       })
                       .then(() => {
                         console.log(
@@ -199,6 +201,8 @@ function App() {
           console.error("Error creating the zip:", error);
         });
     } else {
+      const filename = files[0].path;
+      console.log(filename);
       const storageRef = dbstorageref(storage, "images/" + files[0].path);
       const uploadTask = uploadBytesResumable(storageRef, files[0]);
 
@@ -223,7 +227,7 @@ function App() {
                 .then((uniqueNumber) => {
                   console.log("Unique Number:", uniqueNumber);
                   setUniqueID(uniqueNumber);
-                  return storeDataInDatabase(url, uniqueNumber);
+                  return storeDataInDatabase(url, uniqueNumber,filename);
                 })
                 .then(() => {
                   console.log(
@@ -281,7 +285,7 @@ function App() {
     });
   };
 
-  const storeDataInDatabase = (url, uniqueNumber) => {
+  const storeDataInDatabase = (url, uniqueNumber,filename) => {
     return new Promise((resolve, reject) => {
       const database = getDatabase();
       const databaseRef = ref(database, "fileData");
@@ -290,6 +294,7 @@ function App() {
       set(newDataRef, {
         url: url,
         unique: uniqueNumber,
+        filename: filename
       })
         .then(() => {
           toast.success("File Uploaded Successfully");
@@ -313,10 +318,11 @@ function App() {
         .then((exists) => {
           if (exists) {
             getDownloadURLFromOTP(otpp)
-              .then((downloadUrl) => {
-                console.log("why", downloadUrl);
+              .then(({ url, filename }) => {
+                console.log("Download URL:", url);
+                console.log("Filename:", filename);
                 setshowdownloadloader(false);
-                downloadAndDeleteFile(downloadUrl, otpp);
+                downloadAndDeleteFile(url, otpp, filename); // Pass url and filename to the function
               })
               .catch((error) => {
                 setshowdownloadloader(false);
@@ -342,6 +348,7 @@ function App() {
       toast.error("Enter Proper unique ID");
     }
   };
+  
 
   const checkIfOTPExists = (otp) => {
     return new Promise((resolve, reject) => {
@@ -370,19 +377,25 @@ function App() {
     return new Promise((resolve, reject) => {
       const database = getDatabase();
       const databaseRef = ref(database, "fileData");
-
+  
       const checkQuery = query(
         databaseRef,
         orderByChild("unique"),
         equalTo(otp)
       );
-
+  
       onValue(
         checkQuery,
         (snapshot) => {
           const data = snapshot.val();
           if (data) {
-            resolve(Object.values(data)[0].url);
+            // Retrieve the first entry with the matching OTP
+            const entry = Object.values(data)[0];
+            // Resolve with an object containing both url and filename
+            resolve({
+              url: entry.url,
+              filename: entry.filename || "Unknown Filename", // If the filename is not available, use a default value
+            });
           } else {
             reject(new Error("No download URL found for the given OTP."));
           }
@@ -393,28 +406,36 @@ function App() {
       );
     });
   };
+  
 
-  const downloadAndDeleteFile = (downloadUrl, otp) => {
+  const downloadAndDeleteFile = async (downloadUrl, otp,filename) => {
+    const filePath = "images/"+filename;
     const downloadWindow = window.open(downloadUrl, "_blank");
-
+    const functions = getFunctions();
+            const deleteFile = httpsCallable(functions, "Deletion");
+            const response = await deleteFile({
+                url: filePath,
+                unique: otp,
+            });
+            console.log(response);
     // After the download has started, we can delete the file from the database and storage
-    setTimeout(() => {
-      deleteFileFromDatabase(otp)
-        .then(() => {
-          console.log("File deleted from the database.");
-        })
-        .catch((error) => {
-          console.error("Error deleting file from the database:", error);
-        });
+    // setTimeout(() => {
+    //   deleteFileFromDatabase(otp)
+    //     .then(() => {
+    //       console.log("File deleted from the database.");
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error deleting file from the database:", error);
+    //     });
 
-      deleteFileFromStorage(downloadUrl)
-        .then(() => {
-          console.log("File deleted from Firebase storage.");
-        })
-        .catch((error) => {
-          console.error("Error deleting file from Firebase storage:", error);
-        });
-    }, 10000);
+    //   deleteFileFromStorage(downloadUrl)
+    //     .then(() => {
+    //       console.log("File deleted from Firebase storage.");
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error deleting file from Firebase storage:", error);
+    //     });
+    // }, 10000);
   };
 
   const deleteFileFromDatabase = (otp) => {

@@ -21,4 +21,4 @@ It already had many loopholes , so to overcome it i have developed newer version
 
 - Freeshare uses Firebase to store all the user data in Firebase Storage .
 - It also uses Firebase RealTime Database to store MetaData of the files like File URL , Timestamp , UniqueID.
-- When the user uploads the file and then 
+- When the user uploads the file , he will have an option to upload multiple file also . Also he has option 
