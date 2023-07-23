@@ -101,7 +101,7 @@ function App() {
     font-feature-settings: "kern";
     font-size: 45px;
     font-weight: 700;
-    line-height: 48px;
+    line-height: 60px;
     overflow-wrap: break-word;
     text-rendering: optimizelegibility;
     -moz-osx-font-smoothing: grayscale;
