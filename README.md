@@ -1,100 +1,85 @@
-<h1 align="center" style="font-size:50px;"><a href="https://freeshare.vercel.app">Free Share</a></h1>  
+# FreeShare: File Sharing Platform
+![thumbnail](./public/assets/landingPage-8e480441-9785-40ca-9f26-d2b48cecc688)
+## 🗂️ Description
 
-## Table of Contents
+FreeShare is a file sharing platform built with React, Firebase, and Cloud Functions. This project allows users to share files easily and efficiently. It's designed for individuals and teams who need a simple and secure way to share files.
 
-- [Table of Contents](#table-of-contents)
-- [Introduction](#introduction)
-- [Features](#features)
-- [Working](#working)
-- [User Interface](#user-interface)
-- [Security and Privacy](#security-and-privacy)
-- [Future Plans](#future-plans)
-- [Conclusion](#conclusion)
-- [References](#references)
+The platform provides a user-friendly interface for uploading, sharing, and managing files. With FreeShare, you can share files with others by generating a unique link, and recipients can access the files without needing to create an account.
 
----
+## ✨ Key Features
 
-## Introduction
+### **File Sharing**
+* Upload and share files with others via a unique link
+* Supports various file types, including documents, images, and videos
 
-FreeShare is a free online file sharing platform designed to simplify the process of sharing files without the need for any sign-up or verification. With FreeShare, users can easily share files with others using a simple 5-digit PIN for secure and hassle-free downloads. This project is an enhanced version of the successful AnyShare project, which received great feedback and gathered over 20 stars on GitHub.
+### **Security and Authentication**
+* Secure file storage using Firebase Storage
+* Authentication and authorization using Firebase Authentication
 
-The primary objective behind FreeShare is to provide users with a user-friendly and secure platform for sharing files, while avoiding the common issues and loopholes that were present in the previous version. By leveraging React and Firebase technologies, FreeShare ensures a seamless and secure file-sharing experience for everyone, regardless of their technical expertise.
+### **User Interface**
+* Responsive and user-friendly interface built with React and Material-UI
+* Easy navigation and file management
 
----
+## 🗂️ Folder Structure
 
-## Features
+```mermaid
+graph TD;
+src-->components;
+src-->App.test.js;
+src-->index.js;
+src-->reportWebVitals.js;
+src-->setupTests.js;
+public-->index.html;
+public-->manifest.json;
+public-->robots.txt;
+functions-->index.js;
+functions-->package.json;
+```
 
-FreeShare offers a range of features to enhance the file-sharing experience:
+## 🛠️ Tech Stack
 
-1. **Nice and Pleasant UI**: FreeShare boasts an appealing user interface, making it visually attractive and easy to navigate.
+![React](https://img.shields.io/badge/React-20232a?logo=react&logoColor=white&style=for-the-badge)
+![Firebase](https://img.shields.io/badge/Firebase-ffcb32?logo=firebase&logoColor=white&style=for-the-badge)
+![Cloud Functions](https://img.shields.io/badge/Cloud%20Functions-ff69b4?logo=google-cloud&logoColor=white&style=for-the-badge)
+![Material-UI](https://img.shields.io/badge/Material--UI-007FFF?logo=mui&logoColor=white&style=for-the-badge)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=white&style=for-the-badge)
 
-2. **Upload and Download Files**: Users can effortlessly upload and share files with others.
+## ⚙️ Setup Instructions
 
-3. **Free to Use**: FreeShare is completely free, eliminating any barriers for users who want to share files.
+To run the project locally, follow these steps:
 
-4. **No Email, SignUp, or Phone Number**: FreeShare ensures complete privacy by eliminating the need for personal information during the sharing process.
+* Git clone the repository: `https://github.com/Varshithvhegde/FreeShare.git`
+* Install dependencies: `npm install`
+* Start the development server: `npm start`
+* Open `http://localhost:3000` in your browser to access the application
 
-5. **Secure File Sharing**: The platform generates a unique 5-digit PIN for each file, ensuring that only intended recipients can access the shared files.
+## 📈 GitHub Actions
 
-6. **Sharing Multiple Files**: Users can upload and share multiple files at once, saving time and effort.
+The project uses a GitHub Actions workflow to automate tasks. However, the current workflow configuration (`jekyll-gh-pages.yml`) appears to be a leftover and is not used in this project.
 
----
+## 📁 Configuration Files
 
-## Working
+The project uses several configuration files:
 
-FreeShare operates on a reliable and efficient architecture:
+* `.firebaserc`: Firebase configuration file
+* `firebase.json`: Firebase Cloud Functions configuration file
+* `.github/workflows/jekyll-gh-pages.yml`: GitHub Actions workflow configuration file (not used)
+* `.gitignore`: Git ignore file
+* `functions/.gitignore`: Git ignore file for Cloud Functions
+* `functions/.eslintrc.js`: ESLint configuration file for Cloud Functions
+* `package.json`: Project dependencies and scripts
+* `functions/package.json`: Cloud Functions dependencies and scripts
 
-1. **Firebase Storage**: All user data, including files, is securely stored in Firebase Storage, ensuring fast and reliable access to files.
 
-2. **Firebase Realtime Database**: Metadata related to the shared files, such as File URL, Timestamp, and Unique ID, is stored in Firebase Realtime Database for easy retrieval and management.
 
-3. **File Upload**: When a user uploads a file, they have the option to upload multiple files simultaneously, simplifying the sharing process.
-
-4. **File Download**: To download a shared file, users only need the 5-digit PIN associated with that file. This ensures that only authorized users can access the shared files.
-
-5. **User-Friendly Experience**: FreeShare's intuitive design and straightforward interface make it easy for users with varying levels of technical knowledge to use the platform with ease.
-
----
-
-## User Interface
-![FreeShare](https://github.com/Varshithvhegde/FreeShare/assets/80502833/84bd7301-9b64-4dba-ae25-214f4152a47c)
-
-FreeShare's user interface has been thoughtfully designed to provide a pleasant and hassle-free experience to users. The clean and intuitive design allows users to quickly understand how to navigate the platform, enabling them to share and download files effortlessly. With carefully chosen color schemes and smooth transitions, the user interface makes the file-sharing process a visually appealing experience.
-
-The homepage features a simple and inviting layout, guiding users to either upload files or enter a 5-digit PIN to access shared files. The file upload process is straightforward, with clear instructions and progress indicators to keep users informed about the upload status.
-
----
-
-## Security and Privacy
-
-Ensuring the security and privacy of user data is a top priority for FreeShare. By adopting Firebase as the storage and database solution, FreeShare leverages Firebase's robust security measures, including encryption in transit and at rest, to safeguard user files from unauthorized access.
-
-The unique 5-digit PIN assigned to each file ensures that only those who possess the PIN can access the shared files. This PIN-based system adds an extra layer of security and prevents unauthorized downloads.
-
-Furthermore, FreeShare's no-registration policy means that users do not need to provide any personal information, such as email, phone number, or name, further safeguarding their privacy.
-
----
-
-## Future Plans
-
-As a dynamic and ever-evolving project, FreeShare has exciting future plans to enhance the file-sharing experience even further. Some of the planned improvements include:
-
-1. **File Expiry**: Introducing an option for files to automatically expire after a specified period, enhancing the platform's privacy and security.
-
-2. **User Feedback**: Collecting user feedback to continuously improve the platform's user experience and address any potential issues.
-
-3. **File Preview**: Implementing a file preview feature to allow users to view certain file types directly on the platform without the need for downloading.
-
-4. **User Accounts (Optional)**: Introducing optional user accounts for users who prefer to keep track of their shared files and manage them in a personalized dashboard.
-
----
-
-## Conclusion
-
-FreeShare is a reliable and user-friendly online file sharing platform that simplifies the process of sharing files securely and quickly. With its no-registration policy and unique 5-digit PIN system, FreeShare ensures a private and hassle-free experience for users. The combination of React and Firebase technologies ensures smooth performance and robust security.
-
-As FreeShare continues to evolve and grow, we are excited to make it the go-to platform for users worldwide who seek seamless and secure file sharing without any unnecessary complications. Feel free to try out FreeShare at [https://freeshare.vercel.app](https://freeshare.vercel.app) and start sharing files with ease. Your feedback and suggestions are always welcome as we continue to improve and enhance FreeShare for a better user experience.
-
-## References
-- [Varshith V Hegde](https://github.com/Varshithvhegde)
-- [Star 🌟 on Github](https://github.com/Varshithvhegde/FreeShare)
+<br><br>
+<div align="center">
+<img src="https://avatars.githubusercontent.com/u/80502833?v=4" width="120" />
+<h3>Varshith V Hegde</h3>
+<p>A programmer fond of learning</p>
+</div>
+<br>
+<p align="right">
+<img src="https://gitfull.vercel.app/appLogo.png" width="20"/>  <a href="https://gitfull.vercel.app">Made by GitFull</a>
+</p>
+    
